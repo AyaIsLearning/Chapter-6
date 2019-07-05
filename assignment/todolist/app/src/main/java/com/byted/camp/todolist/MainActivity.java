@@ -2,6 +2,7 @@ package com.byted.camp.todolist;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     TodoDbHelper dbHelper ;
     SQLiteDatabase db ;
 
+    static Context context = null;
 
 
     @Override
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         dbHelper = new TodoDbHelper(this);
-        db = dbHelper.getReadableDatabase();
+        db = dbHelper.getWritableDatabase();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -127,18 +129,18 @@ public class MainActivity extends AppCompatActivity {
         List<Note> result = new LinkedList<>();
         Cursor cursor= null;
         try {
-            cursor = db.query(TodoContract.Todo.TABLE_NAME,null,null,null,null,null,"date DESC");
+            cursor = db.query(TodoContract.Todo.TABLE_NAME,null,null,null,null,null,"priority DESC, date DESC");
             while (cursor.moveToNext()){
                 String content = cursor.getString(cursor.getColumnIndex(TodoContract.Todo.COLUMN_NAME_CONTENT));
                 long dateMs = cursor.getLong(cursor.getColumnIndex(TodoContract.Todo.COLUMN_NAME_DATE));
                 int intState = cursor.getInt(cursor.getColumnIndex(TodoContract.Todo.COLUMN_NAME_STATE));
                 long _id = cursor.getLong(cursor.getColumnIndex(TodoContract.Todo._ID));
-
+                int priority= cursor.getInt(cursor.getColumnIndex(TodoContract.Todo.COLUMN_NAME_PRIORITY));
                 Note note = new Note(_id);
                 note.setContent(content);
                 note.setDate(new Date(dateMs));
                 note.setState(State.from(intState));
-
+                note.setPriority(priority);
                 result.add(note);
             }
         }finally {
@@ -179,6 +181,10 @@ public class MainActivity extends AppCompatActivity {
         else{
             Toast.makeText(this, "修改失败", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static Context getContext(){
+        return context;
     }
 
 }

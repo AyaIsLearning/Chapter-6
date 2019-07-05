@@ -3,6 +3,7 @@ package com.byted.camp.todolist.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created on 2019/1/22.
@@ -14,31 +15,23 @@ public class TodoDbHelper extends SQLiteOpenHelper {
     // TODO 定义数据库名、版本；创建数据库
     public static final String DB_NAME = "database.db";
 
-    public static final int DB_VERSION = 1;
+    public static final int version = 2;
 
     public TodoDbHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+        super(context, DB_NAME, null, version);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE note(_id INTEGER PRIMARY KEY AUTOINCREMENT,date int, state int, content text)");
+        db.execSQL("CREATE TABLE note(_id INTEGER PRIMARY KEY AUTOINCREMENT,date int, state int, content text, priority int)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        for(int i=oldVersion;i<newVersion; i++){
-            switch (i) {
-                case 1:
-                    try {
-                        db.execSQL("ALTER TABLE note ADD COLUMN_NAME pri");
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    break;
-                default:
-                    break;
-            }
+        //System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        Log.i("onUpgrade","wtf");
+        if(oldVersion==1){
+            db.execSQL("ALTER TABLE note ADD priority int");
         }
     }
 
